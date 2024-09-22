@@ -1,0 +1,111 @@
+// Question : Max product word length
+
+Given a string array words, return the maximum value of length(word[i]) * length(word[j]) where the two words do not share common letters. If no such two words exist, return 0.
+Example 1:
+
+Input: words = ["abcw","baz","foo","bar","xtfn","abcdef"]
+Output: 16
+Explanation: The two words can be "abcw", "xtfn".
+Example 2:
+
+Input: words = ["a","ab","abc","d","cd","bcd","abcd"]
+Output: 4
+Explanation: The two words can be "ab", "cd".
+Example 3:
+
+Input: words = ["a","aa","aaa","aaaa"]
+Output: 0
+Explanation: No such pair of words.
+ 
+
+Constraints:
+
+2 <= words.length <= 1000
+1 <= words[i].length <= 1000
+words[i] consists only of lowercase English letters.
+
+
+NOTE: 
+
+intution : Problem Understanding:
+
+Goal: Find the maximum product of lengths of two words in the array that do not share any common letters.
+Input: An array of strings (words).
+Output: An integer representing the maximum product or 0 if no such pair exists.
+Constraints: Array length and word lengths are within specified bounds, and words contain only lowercase letters.
+Intuition Building:
+
+Simple Cases:
+
+Consider small arrays with just a few words. Can you easily identify suitable pairs?
+For example, in the first example, the pair "abcw" and "xtfn" stands out.
+Visualization:
+
+Imagine each word as a set of unique letters.
+If two sets have no overlapping letters, their words can form a valid pair.
+Key Observation:
+
+The product of lengths is maximized when the words are as long as possible and have no common letters.
+Brute Force Approach:
+
+Consider a naive approach where you iterate through all pairs of words and check if they share common letters.
+This would be inefficient for large arrays.
+Optimization:
+
+Think about how to avoid unnecessary comparisons.
+Could you preprocess the words to make the checking process faster?
+Potential Approaches:
+
+Bitmasking: Represent each word as a bitmask where each bit corresponds to a letter. Check for overlap by performing a bitwise AND operation.
+Hashing: Store each word's unique letters in a hash set. Check for overlap by checking if the intersection of two sets is empty.
+Sorting: Sort the words by length in descending order. Start with the longest words and check for compatibility with shorter ones.
+Let me know if you'd like to explore any of these approaches further or if you have other questions.
+
+
+
+
+var maxProduct = function(words) {
+    // result to store
+    let result = 0;
+    // hashmap to store bits 
+    const bitMap = new Map();
+
+    // calculate Bits
+    const calBit = (str) => {
+        let bit = 0;
+        for(let i of str){
+            bit |= 1 << (i.charCodeAt(0) - 'a'.charCodeAt(0));
+        }
+        bitMap.set(str, bit);
+        return bit;
+    }
+
+    // compare bits 
+    const isCommonLetterExist = (str1, str2) => {
+        let str1Bit = bitMap.get(str1) || calBit(str1);
+        let str2Bit = bitMap.get(str2) || calBit(str2);
+        return (str1Bit & str2Bit) != 0;
+    }
+
+    // traverse through each values and compare with others 
+    for(let i = 0; i < words.length - 1; i++){
+        for(let j = i + 1; j < words.length; j++){
+            if(!isCommonLetterExist(words[i], words[j])){
+                result = Math.max(result, words[i].length * words[j].length);
+            }
+        }
+    } 
+    return result;
+}
+
+
+
+
+
+convert Word to bit wise int : 
+
+int bit = 0;
+for(let i of str){
+ bit | = 1 << (i.charCodeAt() - 'a'.charCodeAt());
+
+If & of two bit is 0 then there is no common otherwise there is a common value 
