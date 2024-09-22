@@ -1,0 +1,117 @@
+You are given an m x n matrix board, representing the current state of a crossword puzzle. The crossword contains lowercase English letters (from solved words), ' ' to represent any empty cells, and '#' to represent any blocked cells.
+
+A word can be placed horizontally (left to right or right to left) or vertically (top to bottom or bottom to top) in the board if:
+
+It does not occupy a cell containing the character '#'.
+The cell each letter is placed in must either be ' ' (empty) or match the letter already on the board.
+There must not be any empty cells ' ' or other lowercase letters directly left or right of the word if the word was placed horizontally.
+There must not be any empty cells ' ' or other lowercase letters directly above or below the word if the word was placed vertically.
+Given a string word, return true if word can be placed in board, or false otherwise.
+
+ 
+
+Example 1:
+
+
+Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", "c", " "]], word = "abc"
+Output: true
+Explanation: The word "abc" can be placed as shown above (top to bottom).
+Example 2:
+
+
+Input: board = [[" ", "#", "a"], [" ", "#", "c"], [" ", "#", "a"]], word = "ac"
+Output: false
+Explanation: It is impossible to place the word because there will always be a space/letter above or below it.
+Example 3:
+
+
+Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", " ", "c"]], word = "ca"
+Output: true
+Explanation: The word "ca" can be placed as shown above (right to left). 
+ 
+
+Constraints:
+
+m == board.length
+n == board[i].length
+1 <= m * n <= 2 * 105
+board[i][j] will be ' ', '#', or a lowercase English letter.
+1 <= word.length <= max(m, n)
+word will contain only lowercase English letters.
+
+Intuition for the Crossword Puzzle Problem
+Problem Breakdown:
+
+Goal: Determine if a given word can be placed in a crossword puzzle.
+Conditions: The word must fit within the grid without overlapping with existing letters or blocked cells.
+Orientations: The word can be placed horizontally or vertically.
+Key Considerations:
+
+Word Placement:
+A word can only be placed in empty cells or cells that already match the corresponding letter of the word.
+The placement must not create any gaps or overlaps with existing letters.
+Orthogonality:
+If a word is placed horizontally, there must be no letters or empty cells directly above or below it.
+If a word is placed vertically, there must be no letters or empty cells directly to the left or right of it.
+Blocked Cells:
+Blocked cells (represented by '#') cannot be occupied by any word.
+Intuition Development:
+
+Simple Cases:
+Start with small crossword puzzles and simple words.
+Consider cases where the word can be placed immediately, without requiring any adjustments to existing letters.
+Edge Cases:
+Think about scenarios where the word is placed at the edges of the puzzle or near existing words.
+How do you ensure that the placement doesn't violate the orthogonality constraints?
+Backtracking:
+Consider a trial-and-error approach where you try placing the word in different positions and backtrack if the placement is invalid.
+This involves exploring different possibilities and undoing steps if they lead to dead ends.
+Optimization:
+Think about ways to improve the efficiency of the backtracking process.
+Can you prune branches that are clearly not going to lead to a solution?
+Could you use heuristics to guide the search towards more promising paths?
+Potential Approaches:
+
+Brute Force: Try placing the word in all possible positions and check if it's valid.
+Backtracking: Explore different placement possibilities and backtrack if a placement is invalid.
+Dynamic Programming: Store intermediate results to avoid redundant calculations.
+By understanding these key aspects and considering different approaches, you can develop a solid intuition for solving this crossword puzzle problem.
+
+
+
+// complexity: 
+ // time - O(M * N * W)
+ // space  - O(1)
+var placeWordInCrossword = function(board, word) {
+    // cell is not valid is it does not exist or it contains #
+    const isInvalidCell = (cell) => cell == undefined || cell == '#';
+
+    // go ahead in a given direction and place all words in  VALID and empty cell
+    // if the cell is not empty then it has to have char with is same as the word char at that possition 
+    // other wise the placement is not valid
+    const isValidatePlacement = (row, col, moveX, moveY) => {
+        for(let i = 0; i < word.length; i++){
+            if(isInvalidCell(board[row]?.[col]) || (board[row][col] != ' ' && board[row][col] != word[i])) 
+                return false;
+            row += moveX;
+            col += moveY;
+        }
+        return isInvalidCell(board[row]?.[col]);
+    }
+    // backtrack and check
+    // check for all valid cells in matrix as starting point.
+    // direction can be Right, left, up and down
+    // the direct left, right down and up should be an invalid cell
+    // if only one match found the return true
+    for(let row = 0; row < board.length; row++){
+        for(let col = 0; col < board[row].length; col++){
+            if(!isInvalidCell(board[row]?.[col])){
+                if(isInvalidCell(board[row]?.[col - 1]) && isValidatePlacement(row, col, 0, 1)) return true;
+                if(isInvalidCell(board[row]?.[col + 1]) && isValidatePlacement(row, col, 0, -1)) return true;
+                if(isInvalidCell(board[row - 1]?.[col]) && isValidatePlacement(row, col, 1, 0)) return true;
+                if(isInvalidCell(board[row + 1]?.[col]) && isValidatePlacement(row, col, -1, 0)) return true;
+            }
+        }
+    }
+    return false;    
+};
